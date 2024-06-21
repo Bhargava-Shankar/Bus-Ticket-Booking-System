@@ -9,13 +9,13 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  userId      String    @id  @default(uuid())
-  email       String      @unique
+  userId      String    @id @default(auto()) @map("_id") @db.ObjectId
+  email       String    @unique
   username    String
   password    String
 }
