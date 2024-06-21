@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express"
-import { userLoginController, userRegisterController } from "../controllers/user.controller";
+import { bookBusController, userLoginController, userRegisterController } from "../controllers/user.controller";
 // import dummyDB from "../jsonDB/dummyData.json";
 import { getAllBusController,searchBusController } from "../controllers/user.controller";
 import { verify } from "crypto";
@@ -17,7 +17,10 @@ userRouter.post("/login", userLoginController)
 userRouter.get("/bus", verifyToken ,getAllBusController)
 
 //SEARCH FOR BUSES
-userRouter.get("/search",verifyToken , searchBusController)
+userRouter.get("/search", verifyToken, searchBusController)
+
+//BOOK SEATS IN BUS
+userRouter.post("/book",bookBusController)
 
 
 

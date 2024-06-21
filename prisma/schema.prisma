@@ -57,7 +57,7 @@ enum SeatNumbers {
 model Bus {
   busId            String              @id @default(auto()) @map("_id") @db.ObjectId
   busNumber        String
-  travelsName     String
+  travelsName      String
   source           String
   destination      String
   arrivalTime      DateTime
@@ -66,25 +66,19 @@ model Bus {
   seatingType      BusSeatingType      @default(SEMI_SLEEPER)
   seatsAvailable   Int
   totalSeats       Int
-  Bus_Seat         Bus_Seat[]
-}
-
-model Bus_Seat {
-  seatId            String    @id @default(auto()) @map("_id") @db.ObjectId
-  seatNo            SeatNumbers
-  bus               Bus       @relation(fields: [busId], references: [busId])
-  busId             String    @db.ObjectId
-  isBooked          Boolean   @default(false)
-  Bookings          Bookings? @relation(fields: [bookingsBookingId], references: [bookingId])
-  bookingsBookingId String?   @db.ObjectId
-
-  @@unique([busId, seatNo])
+  Bookings         Bookings[]
 }
 
 model Bookings {
   bookingId     String     @id @default(auto()) @map("_id") @db.ObjectId
-  bookingNumber String     @unique
-  bookedSeats   Bus_Seat[]
-  user          User       @relation(fields: [userId], references: [userId])
+  
+
   userId        String     @db.ObjectId
+  busId         String     @db.ObjectId
+  bookedSeats   String[]
+
+  createdAt  DateTime @default(now())
+  user          User       @relation(fields: [userId], references: [userId])
+  bus           Bus        @relation(fields: [busId], references: [busId])
+  
 }

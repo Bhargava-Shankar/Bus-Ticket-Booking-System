@@ -7,7 +7,9 @@ import myClient from "../utils/dataSource";
 import { AppError } from "../utils/responseFormat";
 import data from "../jsonDB/dummyData"
 import { BusConditioningType } from "@prisma/client";
-import { gteDate,ltDate } from "../utils/date";
+import { gteDate, ltDate } from "../utils/date";
+import { bookingDummyData, createSeats } from "../jsonDB/seatData";
+
 
 
 const db = myClient.getInstance()
@@ -70,7 +72,14 @@ export const userLoginController = async (req: Request, res: Response) => {
 }
 
 export const getAllBusController = async(req: Request, res: Response) => {
-
+    //INSERTING DUMMY JSON DATA TO DB
+    //    data.map(async (busData) => {
+    //     console.log()
+    //     await db.bus.create({
+    //         data: busData
+    //     })
+    // })
+    // res.send("SUCCESS")
     const { source, destination,departureDate } = req.body;
     try {
         const query = await db.bus.findMany({
@@ -123,11 +132,25 @@ export const searchBusController = async (req: Request, res: Response) => {
     
 }
 
-//INSERTING DUMMY JSON DATA TO DB
-    //    data.map(async (busData) => {
-    //     console.log()
-    //     await db.bus.create({
-    //         data: busData
-    //     })
-    // })
-    // res.send("SUCCESS")
+
+export const bookBusController = async(req: Request, res: Response) => {
+
+    const { seatNumber, busId } = req.body;
+    const seatNo: string = seatNumber;
+    try {
+        await db.bookings.create({
+            data: {
+                busId: busId,
+                userId : "6674e9e854cd6596af7cef07",
+                bookedSeats: {
+                    push: [seatNo]
+                }
+            },
+        })
+    }
+    catch (e) {
+        res.send(e)
+    }
+    res.send(data)
+}
+
