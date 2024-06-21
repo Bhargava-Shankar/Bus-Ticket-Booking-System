@@ -1,3 +1,4 @@
+import { truncate } from "fs";
 import jwt from "jsonwebtoken";
 
 export function generateAccessToken(userId: string) {
@@ -18,5 +19,15 @@ export function checkAccessToken(token: string) {
         // err
         return false;
     }
+}
 
+export function decodeToken(token: string)
+{
+    try {
+        var decoded = jwt.verify(token, process.env.JWT_SECRET!);
+        return decoded
+    }
+    catch (err) {
+        return false
+    }
 }

@@ -1,5 +1,5 @@
 import { NextFunction,Request,Response } from "express";
-import { checkAccessToken } from "../utils/jwt";
+import { checkAccessToken, decodeToken } from "../utils/jwt";
 import { StatusCodes } from "http-status-codes";
 import { AppError, errorResponse } from "../utils/responseFormat";
 
@@ -11,6 +11,8 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
             throw new AppError("JWT TOKEN NOT AVAILABLE", StatusCodes.UNAUTHORIZED)
         }
         if (checkAccessToken(token)) {
+            const tokenData: any = decodeToken(token)
+            req.body.userId = tokenData['userId']
             next()
         }
         else {

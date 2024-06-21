@@ -1,4 +1,4 @@
-import {  Request, Response } from "express"
+import {  Request, Response, query } from "express"
 import { comparePassword, hashPassword } from "../utils/crypt"
 import { generateAccessToken } from "../utils/jwt";
 import { successResponse, errorResponse } from "../utils/responseFormat";
@@ -9,6 +9,7 @@ import data from "../jsonDB/dummyData"
 import { BusConditioningType } from "@prisma/client";
 import { gteDate, ltDate } from "../utils/date";
 import { bookingDummyData, createSeats } from "../jsonDB/seatData";
+
 
 
 
@@ -136,32 +137,41 @@ export const searchBusController = async (req: Request, res: Response) => {
 export const bookBusController = async(req: Request, res: Response) => {
 
     //SEARCH IF THE SEAT NUMBER AND BUS ID COMBINATION IS UNIQUE OR NOT : DONE
-    //DECREASE THE SEAT CAPACITY
-    const { seatNumbers, busId } = req.body;
+    const { seatNumbers, busId, userId } = req.body;
+    console.log(userId)
 
+    //BOOKING HAPPENDS AS A WHOLE TRANSACTION OR NONE OF IT GETS EXECUTED
     try {
-        const query = await db.bookings.create({
-            data: {
-                userId: "6674e9e854cd6596af7cef07",
-                busId: busId,
-                bookedSeats: seatNumbers
-            }
-        })
-        await db.bus.update({
+
+        const query = await db.$transaction([
+        db.bus.update({
             where: {
-                busId : busId
+                busId: busId
             },
             data: {
                 seatsAvailable: {
                     decrement: seatNumbers.length
                 }
             }
+        }),
+        db.bookings.create({
+            data: {
+                userId: userId,
+                busId: busId,
+                bookedSeats: seatNumbers
+            }
         })
-        res.send(query)
+       
+        ],
+        )
+          successResponse.data = query
     }
     catch (e) {
-        errorResponse.message = "SEAT ALREADY REGISTERED"
-        res.status(StatusCodes.BAD_REQUEST).send(errorResponse)
+        errorResponse.message = "ERROR BOOKING YOUR SEAT"
+        res.status(StatusCodes.CONFLICT).send(errorResponse)
+        return
     }
+    successResponse.message = "BOOKING SUCCESSFULL"
+    res.status(StatusCodes.ACCEPTED).send(successResponse)
 }
 
