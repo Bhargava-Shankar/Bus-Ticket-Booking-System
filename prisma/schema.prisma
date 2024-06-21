@@ -80,5 +80,7 @@ model Bookings {
   createdAt  DateTime @default(now())
   user          User       @relation(fields: [userId], references: [userId])
   bus           Bus        @relation(fields: [busId], references: [busId])
+
+  @@unique([busId,bookedSeats])
   
 }

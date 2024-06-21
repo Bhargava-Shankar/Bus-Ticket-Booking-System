@@ -135,22 +135,33 @@ export const searchBusController = async (req: Request, res: Response) => {
 
 export const bookBusController = async(req: Request, res: Response) => {
 
-    const { seatNumber, busId } = req.body;
-    const seatNo: string = seatNumber;
+    //SEARCH IF THE SEAT NUMBER AND BUS ID COMBINATION IS UNIQUE OR NOT : DONE
+    //DECREASE THE SEAT CAPACITY
+    const { seatNumbers, busId } = req.body;
+
     try {
-        await db.bookings.create({
+        const query = await db.bookings.create({
             data: {
+                userId: "6674e9e854cd6596af7cef07",
                 busId: busId,
-                userId : "6674e9e854cd6596af7cef07",
-                bookedSeats: {
-                    push: [seatNo]
-                }
-            },
+                bookedSeats: seatNumbers
+            }
         })
+        await db.bus.update({
+            where: {
+                busId : busId
+            },
+            data: {
+                seatsAvailable: {
+                    decrement: seatNumbers.length
+                }
+            }
+        })
+        res.send(query)
     }
     catch (e) {
-        res.send(e)
+        errorResponse.message = "SEAT ALREADY REGISTERED"
+        res.status(StatusCodes.BAD_REQUEST).send(errorResponse)
     }
-    res.send(data)
 }
 
