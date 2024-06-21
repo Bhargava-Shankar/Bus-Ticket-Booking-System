@@ -5,6 +5,9 @@ import { successResponse, errorResponse } from "../utils/responseFormat";
 import { StatusCodes } from "http-status-codes";
 import myClient from "../utils/dataSource";
 import { AppError } from "../utils/responseFormat";
+import data from "../jsonDB/dummyData"
+import { BusConditioningType } from "@prisma/client";
+import { gteDate,ltDate } from "../utils/date";
 
 
 const db = myClient.getInstance()
@@ -22,8 +25,8 @@ export const userRegisterController =
         })
         //GENERATE ACCESS TOKEN
         const accessToken = generateAccessToken(query.userId);
-        successResponse.data = {
-            "token" : accessToken
+        successResponse.message = {
+            "msg" : "Registration Successfull!"
         }
         res.status(StatusCodes.ACCEPTED).json(successResponse);
     }
@@ -65,3 +68,66 @@ export const userLoginController = async (req: Request, res: Response) => {
         res.status(StatusCodes.BAD_REQUEST).json(errorResponse);
     }
 }
+
+export const getAllBusController = async(req: Request, res: Response) => {
+
+    const { source, destination,departureDate } = req.body;
+    try {
+        const query = await db.bus.findMany({
+                where: {
+                    source: source,
+                    destination: destination,
+                    departureTime: (departureDate) ? {
+                        gte: gteDate(departureDate),
+                        lt: ltDate(departureDate)
+                    }: undefined
+                }
+        })
+        console.log(query)
+        res.send(query);
+    }
+    catch (e) {
+        res.send(e);
+    }
+    
+}
+
+
+export const searchBusController = async (req: Request, res: Response) => {
+
+    const { source, destination, departureDate, travelsName } =
+        req.body;
+
+    console.log(source)
+    console.log(departureDate)
+    try {
+            const query = await db.bus.findMany({
+                where: {
+                    travelsName: travelsName,
+                    source: source,
+                    destination: destination,
+                    departureTime: (departureDate) ? {
+                        gte: gteDate(departureDate),
+                        lt: ltDate(departureDate)
+                    }: undefined
+                },
+            })
+        
+        //QUERY IF DEPARTURE DATE IS AVAILABLE
+  
+        res.send(query);
+    }
+    catch (e) {
+        res.send(e);
+    }
+    
+}
+
+//INSERTING DUMMY JSON DATA TO DB
+    //    data.map(async (busData) => {
+    //     console.log()
+    //     await db.bus.create({
+    //         data: busData
+    //     })
+    // })
+    // res.send("SUCCESS")
