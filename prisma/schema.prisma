@@ -76,6 +76,7 @@ model Bookings {
   userId        String     @db.ObjectId
   busId         String     @db.ObjectId
   bookedSeats   String[]
+  totalPrice    Float      @db.Double  
 
   createdAt  DateTime @default(now())
   user          User       @relation(fields: [userId], references: [userId])
@@ -83,4 +84,10 @@ model Bookings {
 
   @@unique([busId,bookedSeats])
   
+}
+
+model BlackListTokens {
+  tokenId  String  @id @default(auto()) @map("_id") @db.ObjectId
+  token String @unique
+  createAt DateTime @default(now())
 }

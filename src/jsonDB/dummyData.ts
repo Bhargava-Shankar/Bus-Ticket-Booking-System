@@ -1,5 +1,13 @@
 import { BusConditioningType,BusSeatingType } from "@prisma/client";
 
+    //INSERTING DUMMY JSON DATA TO DB
+    //    data.map(async (busData) => {
+    //     console.log()
+    //     await db.bus.create({
+    //         data: busData
+    //     })
+    // })
+    // res.send("SUCCESS")
 const dummyData = [
   {
     "busNumber": "BN1001",

@@ -1,177 +1,125 @@
 import {  Request, Response, query } from "express"
 import { comparePassword, hashPassword } from "../utils/crypt"
-import { generateAccessToken } from "../utils/jwt";
+import { generateAccessToken, invalidateToken } from "../utils/jwt";
 import { successResponse, errorResponse } from "../utils/responseFormat";
 import { StatusCodes } from "http-status-codes";
 import myClient from "../utils/dataSource";
 import { AppError } from "../utils/responseFormat";
 import data from "../jsonDB/dummyData"
-import { BusConditioningType } from "@prisma/client";
+import { BusConditioningType, Prisma } from "@prisma/client";
 import { gteDate, ltDate } from "../utils/date";
 import { bookingDummyData, createSeats } from "../jsonDB/seatData";
-
-
+import { setSeatPrice } from "../utils/seat";
+import { AuthService } from "../service/authService";
+import { BusService } from "../service/busService";
 
 
 const db = myClient.getInstance()
-export const userRegisterController =
-    async (req: Request, res: Response) => {
-
-    const hashedPassword = hashPassword(req.body.password);
+export const userRegisterController = async (req: Request, res: Response) => {
+    const authService = new AuthService();
     try {
-        const query = await db.user.create({
-        data: {
-            username : req.body.username,
-            password: hashedPassword,
-            email : req.body.email
-        }
-        })
-        //GENERATE ACCESS TOKEN
-        const accessToken = generateAccessToken(query.userId);
-        successResponse.message = {
-            "msg" : "Registration Successfull!"
-        }
-        res.status(StatusCodes.ACCEPTED).json(successResponse);
+        await authService.userRegisterService(req.body)
+        successResponse.message = { "msg": "Registration Successfull" }
+        return res.status(StatusCodes.ACCEPTED).json(successResponse);
     }
     catch (e) {
-        errorResponse.message = e;
-        res.status(StatusCodes.BAD_REQUEST).json(errorResponse);
+        if (e instanceof AppError) {
+            errorResponse.message = e.message
+            return res.status(e.statusCode).json(errorResponse)
+        }
+        return res.status(StatusCodes.BAD_REQUEST).json(errorResponse)
     }
-    }
+}
 
 export const userLoginController = async (req: Request, res: Response) => {
+    const authService = new AuthService()
     try {
-        let isUser = await db.user.findUnique({
-            where: {
-                email: req.body.email
-            }
-        })
-        if (!isUser) {
-            //CHECK FOR PASSWORD
-            
-             throw new AppError("User Not Found",StatusCodes.BAD_REQUEST)
-        }
-        let loginValid = comparePassword(req.body.password, isUser!.password)
-        if (loginValid) {
-            const accessToken = generateAccessToken(isUser!.userId);
-            successResponse.data = {
-            "token" : accessToken
-            }
-            res.status(StatusCodes.ACCEPTED).json(successResponse);
-            return;
-        }
-        throw new AppError("Password is inValid",StatusCodes.BAD_REQUEST)
-      
-        
+        const accessToken = await authService.userLoginService(req.body)
+        successResponse.data = {"token" : accessToken}
+        return res.status(StatusCodes.ACCEPTED).json(successResponse);
     }
     catch (e) {
         if (e instanceof AppError) {
             errorResponse.message = e.message;
+            return res.status(e.statusCode).json(errorResponse)
         }
-        res.status(StatusCodes.BAD_REQUEST).json(errorResponse);
+        res.status(StatusCodes.BAD_REQUEST).json(e);
     }
 }
 
 export const getAllBusController = async(req: Request, res: Response) => {
-    //INSERTING DUMMY JSON DATA TO DB
-    //    data.map(async (busData) => {
-    //     console.log()
-    //     await db.bus.create({
-    //         data: busData
-    //     })
-    // })
-    // res.send("SUCCESS")
-    const { source, destination,departureDate } = req.body;
+    const busService = new BusService()
     try {
-        const query = await db.bus.findMany({
-                where: {
-                    source: source,
-                    destination: destination,
-                    departureTime: (departureDate) ? {
-                        gte: gteDate(departureDate),
-                        lt: ltDate(departureDate)
-                    }: undefined
-                }
-        })
-        console.log(query)
-        res.send(query);
+        const busDetails = await busService.getAllBusService(req.body)
+        successResponse.data = busDetails
+        if (busDetails.length === 0) {
+            successResponse.message = "No Buses Found"
+        }
+        return res.status(StatusCodes.ACCEPTED).json(successResponse)
     }
     catch (e) {
-        res.send(e);
+        if (e instanceof AppError) {
+            errorResponse.message = e.message
+            return res.status(e.statusCode).json(errorResponse);
+        }
     }
     
 }
 
-
 export const searchBusController = async (req: Request, res: Response) => {
 
-    const { source, destination, departureDate, travelsName } =
-        req.body;
-
-    console.log(source)
-    console.log(departureDate)
+ const busService = new BusService()
     try {
-            const query = await db.bus.findMany({
-                where: {
-                    travelsName: travelsName,
-                    source: source,
-                    destination: destination,
-                    departureTime: (departureDate) ? {
-                        gte: gteDate(departureDate),
-                        lt: ltDate(departureDate)
-                    }: undefined
-                },
-            })
-        
-        //QUERY IF DEPARTURE DATE IS AVAILABLE
-  
-        res.send(query);
+        const busDetails = await busService.getAllBusService(req.body)
+        successResponse.data = busDetails
+        if (busDetails.length === 0) {
+            successResponse.message = "No Buses Found"
+        }
+        return res.status(StatusCodes.ACCEPTED).json(successResponse)
     }
     catch (e) {
-        res.send(e);
+        if (e instanceof AppError) {
+            errorResponse.message = e.message
+            return res.status(e.statusCode).json(errorResponse);
+        }
     }
     
 }
 
 
 export const bookBusController = async(req: Request, res: Response) => {
-
     //SEARCH IF THE SEAT NUMBER AND BUS ID COMBINATION IS UNIQUE OR NOT : DONE
-    const { seatNumbers, busId, userId } = req.body;
-    console.log(userId)
-
     //BOOKING HAPPENDS AS A WHOLE TRANSACTION OR NONE OF IT GETS EXECUTED
+    const busService = new BusService();
     try {
-
-        const query = await db.$transaction([
-        db.bus.update({
-            where: {
-                busId: busId
-            },
-            data: {
-                seatsAvailable: {
-                    decrement: seatNumbers.length
-                }
-            }
-        }),
-        db.bookings.create({
-            data: {
-                userId: userId,
-                busId: busId,
-                bookedSeats: seatNumbers
-            }
-        })
-       
-        ],
-        )
-          successResponse.data = query
+        const bookingDetails = await busService.bookBusService(req.body)
+        successResponse.data = bookingDetails
+        successResponse.message = {
+            "msg" : "Booking Successfull"
+        }
+        return res.status(StatusCodes.ACCEPTED).send(successResponse)
     }
     catch (e) {
-        errorResponse.message = "ERROR BOOKING YOUR SEAT"
+        errorResponse.message = { "msg": "ERROR BOOKING YOUR SEAT" }
         res.status(StatusCodes.CONFLICT).send(errorResponse)
-        return
+        
     }
-    successResponse.message = "BOOKING SUCCESSFULL"
-    res.status(StatusCodes.ACCEPTED).send(successResponse)
 }
 
+export const logoutController = async (req: Request, res: Response) => {
+    try {
+        const authService = new AuthService()
+        await authService.userLogoutService(req.headers)
+        successResponse.message = { "msg": "LOG OUT SUCCESSFULL" }
+        successResponse.data = {}
+        res.status(StatusCodes.ACCEPTED).send(successResponse)
+    }
+    catch (e)
+    {
+        errorResponse.message = {
+            "msg" : "YOU ARE ALREADY LOGGED OUT"
+        }
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(errorResponse)
+    }
+    
+}

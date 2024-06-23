@@ -1,18 +1,20 @@
 import { NextFunction,Request,Response } from "express";
-import { checkAccessToken, decodeToken } from "../utils/jwt";
+import { checkAccessToken, checkIfPresentInDB, decodeToken } from "../utils/jwt";
 import { StatusCodes } from "http-status-codes";
 import { AppError, errorResponse } from "../utils/responseFormat";
 
-const verifyToken = (req: Request, res: Response, next: NextFunction) => {
+const verifyToken = async(req: Request, res: Response, next: NextFunction) => {
     
     try {
         const token = req.headers['authorization']?.substring(7);
         if (!token) {
             throw new AppError("JWT TOKEN NOT AVAILABLE", StatusCodes.UNAUTHORIZED)
         }
-        if (checkAccessToken(token)) {
+        const ifPresentInDb: boolean | undefined = await checkIfPresentInDB(token);
+        if (checkAccessToken(token) && !ifPresentInDb ) {
             const tokenData: any = decodeToken(token)
             req.body.userId = tokenData['userId']
+            req.body.token = token
             next()
         }
         else {

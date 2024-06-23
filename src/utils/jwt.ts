@@ -1,5 +1,10 @@
 import { truncate } from "fs";
 import jwt from "jsonwebtoken";
+import myClient from "./dataSource";
+import { AppError } from "./responseFormat";
+import { StatusCodes } from "http-status-codes";
+
+const db = myClient.getInstance()
 
 export function generateAccessToken(userId: string) {
     const secret = process.env.JWT_SECRET!;
@@ -29,5 +34,28 @@ export function decodeToken(token: string)
     }
     catch (err) {
         return false
+    }
+}
+
+export const invalidateToken = async (token: string) => {
+    console.log(token)
+    
+}
+
+export const checkIfPresentInDB = async (token: string) => {
+    try {
+        const query = await db.blackListTokens.findFirst({
+            where: {
+                token : token
+            }
+        })
+        console.log(query)
+        if (query == null) {
+            return false
+        }
+        return true
+    }
+    catch (e) {
+        new AppError("You are Already Logged Out", StatusCodes.BAD_REQUEST)
     }
 }

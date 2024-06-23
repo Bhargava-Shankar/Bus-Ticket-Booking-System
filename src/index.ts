@@ -7,9 +7,8 @@ import { router } from './routes/index';
 
 const options = {
     definition: {
-        openapi: "3.0.0",
          info: {
-            title: 'Hello World',
+            title: 'Bus Ticket Booking System',
             version: '1.0.0',
             },
         servers: [
@@ -18,7 +17,7 @@ const options = {
             },
         ],
     },
-    apis : ["./src/routes/user.route.ts"]
+    apis : ["./src/swagger.yaml"]
 }
 
 const spacs = swaggerjsdoc(options)
