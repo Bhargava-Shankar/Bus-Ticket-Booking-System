@@ -4,7 +4,7 @@ import swaggerui from 'swagger-ui-express'
 import { router } from './routes/index';
 import YAML from 'yamljs'
 
-const swaggerDocument = YAML.load('src/swagger.yaml');
+const swaggerDocument = YAML.load('./swagger.yaml');
 const app = express()
 app.use(express.json())
 app.use("/api-docs",swaggerui.serve,swaggerui.setup(swaggerDocument))

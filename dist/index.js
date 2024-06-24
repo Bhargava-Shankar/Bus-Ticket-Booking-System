@@ -8,7 +8,7 @@ require("dotenv/config");
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const index_1 = require("./routes/index");
 const yamljs_1 = __importDefault(require("yamljs"));
-const swaggerDocument = yamljs_1.default.load('src/swagger.yaml');
+const swaggerDocument = yamljs_1.default.load('./swagger.yaml');
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocument));
