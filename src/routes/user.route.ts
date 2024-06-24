@@ -22,7 +22,9 @@ userRouter.get("/search", verifyToken, searchBusController)
 userRouter.post("/book", verifyToken, bookBusController)
 
 //LOGOOUT
-userRouter.post("/logout",logoutController)
+userRouter.post("/logout", logoutController)
+
+
 
 
 

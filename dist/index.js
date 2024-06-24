@@ -8,13 +8,13 @@ const index_1 = require("./routes/index");
 //const swaggerDocument = YAML.load('./src/swagger.yaml');
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
+//app.use("/api-docs",swaggerui.serve,swaggerui.setup(swaggerDocument))
+app.use(index_1.router);
 app.use("/", (req, res) => {
     return res.send({
         "200": "Build Done"
     });
 });
-//app.use("/api-docs",swaggerui.serve,swaggerui.setup(swaggerDocument))
-app.use(index_1.router);
 //FROM PLACE TO PLACE
 //AC NON AC SLEEPER SEMI SLEEPER
 //SEAT NUMBER CODE

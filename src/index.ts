@@ -9,14 +9,15 @@ import YAML from 'yamljs'
 //const swaggerDocument = YAML.load('./src/swagger.yaml');
 const app = express()
 app.use(express.json())
+
+//app.use("/api-docs",swaggerui.serve,swaggerui.setup(swaggerDocument))
+app.use(router);
+
 app.use("/", (req: Request,res: Response) => {
     return res.send({
         "200" : "Build Done"
     })
 })
-//app.use("/api-docs",swaggerui.serve,swaggerui.setup(swaggerDocument))
-app.use(router);
-
 
 //FROM PLACE TO PLACE
 //AC NON AC SLEEPER SEMI SLEEPER
