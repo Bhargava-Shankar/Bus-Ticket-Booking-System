@@ -1,18 +1,11 @@
-import {  Request, Response, query } from "express"
-import { comparePassword, hashPassword } from "../utils/crypt"
-import { generateAccessToken, invalidateToken } from "../utils/jwt";
+import {  Request, Response } from "express"
 import { successResponse, errorResponse } from "../utils/responseFormat";
 import { StatusCodes } from "http-status-codes";
 import myClient from "../utils/dataSource";
 import { AppError } from "../utils/responseFormat";
-import data from "../jsonDB/dummyData"
-import { BusConditioningType, Prisma } from "@prisma/client";
-import { gteDate, ltDate } from "../utils/date";
-import { bookingDummyData, createSeats } from "../jsonDB/seatData";
-import { setSeatPrice } from "../utils/seat";
 import { AuthService } from "../service/authService";
 import { BusService } from "../service/busService";
-
+import getAllBusRequest from "../interfaces";
 
 const db = myClient.getInstance()
 export const userRegisterController = async (req: Request, res: Response) => {
@@ -49,13 +42,15 @@ export const userLoginController = async (req: Request, res: Response) => {
 
 export const getAllBusController = async(req: Request, res: Response) => {
     const busService = new BusService()
+    const data: any = req.query
+    console.log(data)
     try {
-        const busDetails = await busService.getAllBusService(req.body)
+        const busDetails = await busService.getAllBusService(data)
         successResponse.data = busDetails
         if (busDetails.length === 0) {
             successResponse.message = "No Buses Found"
         }
-        return res.status(StatusCodes.ACCEPTED).json(successResponse)
+        return res.status(StatusCodes.OK).json(successResponse)
     }
     catch (e) {
         if (e instanceof AppError) {
@@ -68,9 +63,10 @@ export const getAllBusController = async(req: Request, res: Response) => {
 
 export const searchBusController = async (req: Request, res: Response) => {
 
- const busService = new BusService()
+    const busService = new BusService()
+    const data:any = req.query
     try {
-        const busDetails = await busService.getAllBusService(req.body)
+        const busDetails = await busService.getAllBusService(data)
         successResponse.data = busDetails
         if (busDetails.length === 0) {
             successResponse.message = "No Buses Found"

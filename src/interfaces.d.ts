@@ -9,11 +9,11 @@ export interface userLoginCredentials {
     password: string,
 }
 
-export interface getAllBusRequest {
+export  interface getAllBusRequest {
     source: string,
     destination: string,
     departureDate: string,
-    travelsName: string
+    travelsName?: string
 }
 
 export interface bookBusRequest {

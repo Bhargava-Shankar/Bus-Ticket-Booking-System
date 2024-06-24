@@ -3,7 +3,6 @@ import { configDotenv } from 'dotenv';
 import swaggerjsdoc from "swagger-jsdoc"
 import swaggerui from 'swagger-ui-express'
 import { router } from './routes/index';
-import path from 'path';
 import YAML from 'yamljs'
 
 const swaggerDocument = YAML.load('./src/swagger.yaml');

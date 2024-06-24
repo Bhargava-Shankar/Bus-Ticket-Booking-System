@@ -9,6 +9,7 @@ servers:
 tags:
   - name: auth
   - name: bus
+  - name: booking
 paths:
   /user/register:
     post:
@@ -138,8 +139,93 @@ paths:
           description: User is successfully registered
         '401':
           description: User Already Logged Out
-
-
+  /user/getAllBus:
+    get:
+      summary: Get all the available buses given source, destination and date
+      tags:
+        - bus
+      parameters:
+        - in: query 
+          name: source
+          schema:
+            type: string
+          example: Chennai
+        - in: query
+          name: destination
+          schema:
+            type: string
+          example: Madurai
+        - in: query
+          name: departureDate
+          schema:
+            type: string
+            format: date
+          example: "2024-06-21"
+      responses:
+        '200':
+          description: Get all bus details successfull
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusDetails"
+  /user/search:
+    get:
+      summary: Search buses given source, destination, date, and travel name
+      tags:
+        - bus
+      parameters:
+        - in: query 
+          name: source
+          schema:
+            type: string
+          example: Chennai
+        - in: query
+          name: destination
+          schema:
+            type: string
+          example: Madurai
+        - in: query
+          name: departureDate
+          schema:
+            type: string
+            format: date
+          example: "2024-06-21"
+        - in: query
+          name: travelsName
+          schema:
+            type: string
+          example: Economy Travels
+      responses:
+        '200':
+          description: Get all bus details successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusDetails"
+  /user/book:
+    post:
+      summary: Book bus tickets
+      tags:
+        - booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookRequest"
+      responses:
+        '200':
+          description: Booking successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookResponse"
+        '409':
+          description: Error booking your seat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
 components:
   securitySchemes:
@@ -163,6 +249,149 @@ components:
       required:
         - email
         - password
+    BusDetails:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              busId:
+                type: string
+                example: "66750c4af4e458f5dd0e3db6"
+              busNumber:
+                type: string
+                example: "BN1005"
+              travelsName:
+                type: string
+                example: "Economy Travels"
+              source:
+                type: string
+                example: "Chennai"
+              destination:
+                type: string
+                example: "Madurai"
+              arrivalTime:
+                type: string
+                format: date-time
+                example: "2024-06-21T23:30:00.000Z"
+              departureTime:
+                type: string
+                format: date-time
+                example: "2024-06-21T18:00:00.000Z"
+              conditioningType:
+                type: string
+                example: "AC"
+              seatingType:
+                type: string
+                example: "SEMI_SLEEPER"
+              seatsAvailable:
+                type: integer
+                example: 20
+              totalSeats:
+                type: integer
+                example: 20
+        message:
+          type: object
+          example: {}
+    BookRequest:
+      type: object
+      properties:
+        busId:
+          type: string
+          example: "66750c49f4e458f5dd0e3db0"
+        seatNumbers:
+          type: array
+          items:
+            type: string
+          example:
+            - "LL4"
+            - "RL1"
+    BookResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              bookingId:
+                type: string
+                example: "66799f02c3d1536c744380bc"
+              userId:
+                type: string
+                example: "667878f43e743b62ee3f51e4"
+              busId:
+                type: string
+                example: "66750c49f4e458f5dd0e3db0"
+              bookedSeats:
+                type: array
+                items:
+                  type: string
+                example:
+                  - "LL123"
+                  - "RL123"
+              totalPrice:
+                type: number
+                example: 1600
+              createdAt:
+                type: string
+                format: date-time
+                example: "2024-06-24T16:29:54.306Z"
+              busNumber:
+                type: string
+                example: "BN1002"
+              travelsName:
+                type: string
+                example: "Happy Journeys"
+              source:
+                type: string
+                example: "Trichy"
+              destination:
+                type: string
+                example: "Madurai"
+              arrivalTime:
+                type: string
+                format: date-time
+                example: "2024-06-21T16:45:00.000Z"
+              departureTime:
+                type: string
+                format: date-time
+                example: "2024-06-21T10:15:00.000Z"
+              conditioningType:
+                type: string
+                example: "NON_AC"
+              seatingType:
+                type: string
+                example: "SEMI_SLEEPER"
+              seatsAvailable:
+                type: integer
+                example: 16
+              totalSeats:
+                type: integer
+                example: 20
+        message:
+          type: object
+          properties:
+            msg:
+              type: string
+              example: "Booking Successful"
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "error"
+        message:
+          type: string
+          example: "Error booking your seat"
   
 
 security:

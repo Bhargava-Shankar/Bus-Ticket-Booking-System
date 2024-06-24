@@ -38,8 +38,7 @@ export function decodeToken(token: string)
 }
 
 export const invalidateToken = async (token: string) => {
-    console.log(token)
-    
+  
 }
 
 export const checkIfPresentInDB = async (token: string) => {
@@ -49,7 +48,6 @@ export const checkIfPresentInDB = async (token: string) => {
                 token : token
             }
         })
-        console.log(query)
         if (query == null) {
             return false
         }

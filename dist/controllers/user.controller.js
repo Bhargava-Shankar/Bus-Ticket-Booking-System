@@ -54,13 +54,15 @@ const userLoginController = (req, res) => __awaiter(void 0, void 0, void 0, func
 exports.userLoginController = userLoginController;
 const getAllBusController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const busService = new busService_1.BusService();
+    const data = req.query;
+    console.log(data);
     try {
-        const busDetails = yield busService.getAllBusService(req.body);
+        const busDetails = yield busService.getAllBusService(data);
         responseFormat_1.successResponse.data = busDetails;
         if (busDetails.length === 0) {
             responseFormat_1.successResponse.message = "No Buses Found";
         }
-        return res.status(http_status_codes_1.StatusCodes.ACCEPTED).json(responseFormat_1.successResponse);
+        return res.status(http_status_codes_1.StatusCodes.OK).json(responseFormat_1.successResponse);
     }
     catch (e) {
         if (e instanceof responseFormat_2.AppError) {
@@ -72,8 +74,9 @@ const getAllBusController = (req, res) => __awaiter(void 0, void 0, void 0, func
 exports.getAllBusController = getAllBusController;
 const searchBusController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const busService = new busService_1.BusService();
+    const data = req.query;
     try {
-        const busDetails = yield busService.getAllBusService(req.body);
+        const busDetails = yield busService.getAllBusService(data);
         responseFormat_1.successResponse.data = busDetails;
         if (busDetails.length === 0) {
             responseFormat_1.successResponse.message = "No Buses Found";

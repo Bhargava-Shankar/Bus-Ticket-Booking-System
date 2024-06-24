@@ -89,7 +89,6 @@ const createSeats = () => {
                 isBooked: false
             });
         });
-        console.log(seatDummyData);
         return seatDummyData;
     });
 };

@@ -49,7 +49,6 @@ function decodeToken(token) {
 }
 exports.decodeToken = decodeToken;
 const invalidateToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(token);
 });
 exports.invalidateToken = invalidateToken;
 const checkIfPresentInDB = (token) => __awaiter(void 0, void 0, void 0, function* () {
@@ -59,7 +58,6 @@ const checkIfPresentInDB = (token) => __awaiter(void 0, void 0, void 0, function
                 token: token
             }
         });
-        console.log(query);
         if (query == null) {
             return false;
         }
