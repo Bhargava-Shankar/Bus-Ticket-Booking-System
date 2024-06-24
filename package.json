@@ -5,7 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --files src/index.ts"
+    "dev": "nodemon --files src/index.ts src/swagger.yaml"
   },
   "author": "",
   "license": "ISC",
@@ -30,6 +30,7 @@
     "@types/node": "^20.14.6",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.6",
+    "@types/yamljs": "^0.2.34",
     "prisma": "^5.15.1",
     "typescript": "^5.4.5",
     "yamljs": "^0.3.0"

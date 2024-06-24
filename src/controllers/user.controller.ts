@@ -36,7 +36,7 @@ export const userLoginController = async (req: Request, res: Response) => {
     try {
         const accessToken = await authService.userLoginService(req.body)
         successResponse.data = {"token" : accessToken}
-        return res.status(StatusCodes.ACCEPTED).json(successResponse);
+        return res.status(StatusCodes.OK).json(successResponse);
     }
     catch (e) {
         if (e instanceof AppError) {
@@ -112,14 +112,14 @@ export const logoutController = async (req: Request, res: Response) => {
         await authService.userLogoutService(req.headers)
         successResponse.message = { "msg": "LOG OUT SUCCESSFULL" }
         successResponse.data = {}
-        res.status(StatusCodes.ACCEPTED).send(successResponse)
+        res.status(StatusCodes.OK).send(successResponse)
     }
     catch (e)
     {
         errorResponse.message = {
             "msg" : "YOU ARE ALREADY LOGGED OUT"
         }
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(errorResponse)
+        res.status(StatusCodes.UNAUTHORIZED).send(errorResponse)
     }
     
 }

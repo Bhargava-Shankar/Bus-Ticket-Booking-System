@@ -3,28 +3,12 @@ import { configDotenv } from 'dotenv';
 import swaggerjsdoc from "swagger-jsdoc"
 import swaggerui from 'swagger-ui-express'
 import { router } from './routes/index';
+import YAML from 'yamljs'
 
-
-const options = {
-    definition: {
-         info: {
-            title: 'Bus Ticket Booking System',
-            version: '1.0.0',
-            },
-        servers: [
-            {
-                url : "http://localhost:3000/"
-            },
-        ],
-    },
-    apis : ["./src/swagger.yaml"]
-}
-
-const spacs = swaggerjsdoc(options)
-
+const swaggerDocument = YAML.load('./src/swagger.yaml');
 const app = express()
 app.use(express.json())
-app.use("/api-docs",swaggerui.serve,swaggerui.setup(spacs))
+app.use("/api-docs",swaggerui.serve,swaggerui.setup(swaggerDocument))
 app.use(router);
 
 
