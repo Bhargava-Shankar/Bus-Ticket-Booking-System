@@ -6,7 +6,6 @@ info:
 servers:
   - url: http://localhost:3000/
   - name: user
-    
 tags:
   - name: auth
   - name: bus
