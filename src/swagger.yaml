@@ -3,8 +3,10 @@ info:
   title: Bus Ticket Booking System 
   version: 1.0.0
 servers:
+  - url: https://bus-ticket-booking-system-orpin.vercel.app/
+  - name: production
   - url: http://localhost:3000/
-  - name: user
+  - name: development
 tags:
   - name: auth
   - name: bus
