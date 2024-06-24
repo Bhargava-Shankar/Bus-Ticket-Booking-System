@@ -9,7 +9,7 @@ const swaggerDocument = YAML.load('./src/swagger.yaml');
 const app = express()
 app.use(express.json())
 app.use("/", (req: Request,res: Response) => {
-    res.send({
+    return res.send({
         "200" : "Build Done"
     })
 })
