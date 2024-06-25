@@ -46,7 +46,8 @@ class AuthService {
                 isUser = yield authRepository.findUniqueUser(email);
             }
             catch (e) {
-                throw new responseFormat_1.AppError("Internal Server error", http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR);
+                throw e;
+                //throw new AppError("Internal Server error",StatusCodes.INTERNAL_SERVER_ERROR)
             }
             //EMAIL NOT FOUND - USER NOT REGISTERED
             if (!isUser) {

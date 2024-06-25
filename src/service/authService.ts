@@ -37,7 +37,8 @@ export class AuthService{
             isUser = await authRepository.findUniqueUser(email)
         }
         catch (e) {
-            throw new AppError("Internal Server error",StatusCodes.INTERNAL_SERVER_ERROR)
+            throw e
+            //throw new AppError("Internal Server error",StatusCodes.INTERNAL_SERVER_ERROR)
         }
         //EMAIL NOT FOUND - USER NOT REGISTERED
         if (!isUser) {
