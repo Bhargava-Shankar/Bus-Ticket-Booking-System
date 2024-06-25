@@ -19,7 +19,6 @@ export class AuthService{
                 email: data.email,
                 password: hashedPassword
             })
-     
         }
         catch (e) {
             if (e instanceof AppError) {

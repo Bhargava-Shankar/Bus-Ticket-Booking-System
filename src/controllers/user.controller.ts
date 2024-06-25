@@ -13,7 +13,7 @@ export const userRegisterController = async (req: Request, res: Response) => {
     try {
         await authService.userRegisterService(req.body)
         successResponse.message = { "msg": "Registration Successfull" }
-        return res.status(StatusCodes.ACCEPTED).json(successResponse);
+        return res.status(StatusCodes.OK).json(successResponse);
     }
     catch (e) {
         if (e instanceof AppError) {
@@ -71,7 +71,7 @@ export const searchBusController = async (req: Request, res: Response) => {
         if (busDetails.length === 0) {
             successResponse.message = "No Buses Found"
         }
-        return res.status(StatusCodes.ACCEPTED).json(successResponse)
+        return res.status(StatusCodes.OK).json(successResponse)
     }
     catch (e) {
         if (e instanceof AppError) {
@@ -93,7 +93,7 @@ export const bookBusController = async(req: Request, res: Response) => {
         successResponse.message = {
             "msg" : "Booking Successfull"
         }
-        return res.status(StatusCodes.ACCEPTED).send(successResponse)
+        return res.status(StatusCodes.OK).send(successResponse)
     }
     catch (e) {
         errorResponse.message = { "msg": "ERROR BOOKING YOUR SEAT" }

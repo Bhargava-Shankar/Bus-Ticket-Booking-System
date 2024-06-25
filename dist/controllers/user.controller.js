@@ -25,7 +25,7 @@ const userRegisterController = (req, res) => __awaiter(void 0, void 0, void 0, f
     try {
         yield authService.userRegisterService(req.body);
         responseFormat_1.successResponse.message = { "msg": "Registration Successfull" };
-        return res.status(http_status_codes_1.StatusCodes.ACCEPTED).json(responseFormat_1.successResponse);
+        return res.status(http_status_codes_1.StatusCodes.OK).json(responseFormat_1.successResponse);
     }
     catch (e) {
         if (e instanceof responseFormat_2.AppError) {
@@ -81,7 +81,7 @@ const searchBusController = (req, res) => __awaiter(void 0, void 0, void 0, func
         if (busDetails.length === 0) {
             responseFormat_1.successResponse.message = "No Buses Found";
         }
-        return res.status(http_status_codes_1.StatusCodes.ACCEPTED).json(responseFormat_1.successResponse);
+        return res.status(http_status_codes_1.StatusCodes.OK).json(responseFormat_1.successResponse);
     }
     catch (e) {
         if (e instanceof responseFormat_2.AppError) {
@@ -101,7 +101,7 @@ const bookBusController = (req, res) => __awaiter(void 0, void 0, void 0, functi
         responseFormat_1.successResponse.message = {
             "msg": "Booking Successfull"
         };
-        return res.status(http_status_codes_1.StatusCodes.ACCEPTED).send(responseFormat_1.successResponse);
+        return res.status(http_status_codes_1.StatusCodes.OK).send(responseFormat_1.successResponse);
     }
     catch (e) {
         responseFormat_1.errorResponse.message = { "msg": "ERROR BOOKING YOUR SEAT" };
