@@ -35,7 +35,7 @@ export class AuthRepository{
             })
         }
         catch (e) {
-            throw new AppError("Internal Server Error",StatusCodes.INTERNAL_SERVER_ERROR)
+            throw e
         }
     }
 

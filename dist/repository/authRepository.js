@@ -46,7 +46,7 @@ class AuthRepository {
                 });
             }
             catch (e) {
-                throw new responseFormat_1.AppError("Internal Server Error", http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR);
+                throw e;
             }
         });
     }
